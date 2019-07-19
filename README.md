@@ -9,34 +9,76 @@ What should you look for:
 
   - Bad:
   ```java
-  for (i = 0; i < 77; i++) {}
+  for (i = 0; i < 26; i++) {}
   ```
 
   - Good:
   ```java
-  for (i = 0; i < 77; i++) {}
+  int alphabetLength = 26;
+
+  for (i = 0; i < alphabetLength; i++) {}
   ```
 
 - Defensive Code
-```
 
-```
+  - Bad:
+  ```java
+
+  ```
+
+  - Good:
+  ```java
+
+  ```
+
 - Functions / Methods / Services / Variable Names
-```
 
-```
+  - Bad:
+  ```java
+
+  ```
+
+  - Good:
+  ```java
+
+  ```
+
 - Return types (look for Dependency Inversion Principle)
-```
 
-```
+  - Bad:
+  ```java
+
+  ```
+
+  - Good:
+  ```java
+
+  ```
+
 - Functions / Methods / Services / Variable Access
-```
 
-```
+  - Bad:
+  ```java
+
+  ```
+
+  - Good:
+  ```java
+
+  ```
+
 - Remove Unused/Commented Code
-```
 
-```
+  - Bad:
+  ```java
+
+  ```
+
+  - Good:
+  ```java
+
+  ```
+
 - Format Code
 
   - Bad:
@@ -61,31 +103,55 @@ What should you look for:
   ```
 
 - Code coverage
-```
 
-```
+  - Bad:
+  ```java
+
+  ```
+
+  - Good:
+  ```java
+
+  ```
+
 - Cyclomatic Complexity
-```
 
-```
+  - Bad:
+  ```java
+
+  ```
+
+  - Good:
+  ```java
+
+  ```
+
 - DRY (Don't Repeat Yourself)
-```
-int sum(int a, int b) {
-  return a + b;
-}
 
-Integer sumToo(int a, int b) {
-  Integer.sum(a, b);
-}
-```
+  - Bad:
+  ```java
+  int sum(int a, int b) {
+    return a + b;
+  }
+
+  Integer sumToo(int a, int b) {
+    Integer.sum(a, b);
+  }
+  ```
+
+  - Good:
+  ```java
+  int sum(int a, int b) {
+    return a + b;
+  }
+  ```
+
 - Data structures and Big-O complexities
 ```
 
 ```
-- *Adherence to our architectural pattern (Resource, Service, etc.)
-```
+- Adherence to the project's architectural pattern (Resource, Service, etc.)
 
-```
 - SOLID
 
   - Single Responsibility Principle: A class should have one, and only one, reason to change.
@@ -197,21 +263,172 @@ Integer sumToo(int a, int b) {
     }
     ```
 
-    - Good:
+    - Good (through composition):
     ```java
+    class Rectangle {
+      private int width, height;
 
+      Rectangle(int width, int height) {
+        this.width = width;
+        this.height = height;
+      }
+
+      void setWidth(int width) {
+        this.width = width;
+      }
+
+      void setHeight(int height) {
+        this.height = height;
+      }
+
+      int getArea() {
+        return this.width * this.height;
+      }
+    }
+
+    class Square {
+      private Rectangle rectange;
+
+      Square(Rectangle rectange) {
+        this.rectange = rectange;
+      }
+
+      void setWidthAndHeight(int widthAndHeight) {
+        rectange.setWidth(widthAndHeight);
+        rectange.setHeight(widthAndHeight);
+      }
+    }
+
+    class RectangleTest {
+      // You can't test squares as rectangles anymore
+      void assertRectangle() {
+        Rectangle rectangle = new Rectangle(10);
+        rectangle.setWidth(4);
+        rectangle.setHeight(5);
+
+        assertEquals(20, rectangle.getArea());
+      }
+    }
     ```
 
-  - Interface Segregation Principle: Make fine grained interfaces that are client specific.
+    - Good (by inheritance):
+    ```java
+    interface Shape {
+
+    }
+
+    class Rectangle  {
+      private int width, height;
+
+      Rectangle(int width, int height) {
+        this.width = width;
+        this.height = height;
+      }
+
+      void setWidth(int width) {
+        this.width = width;
+      }
+
+      void setHeight(int height) {
+        this.height = height;
+      }
+
+      int getArea() {
+        return this.width * this.height;
+      }
+    }
+
+    class Square {
+      private Rectangle rectange;
+
+      Square(Rectangle rectange) {
+        this.rectange = rectange;
+      }
+
+      void setWidthAndHeight(int widthAndHeight) {
+        super.setWidth(widthAndHeight);
+        super.setHeight(widthAndHeight);
+      }
+    }
+
+    class RectangleTest {
+      // You can't test squares as rectangles anymore
+      void assertRectangle() {
+        Rectangle rectangle = new Rectangle(10);
+        rectangle.setWidth(4);
+        rectangle.setHeight(5);
+
+        assertEquals(20, rectangle.getArea());
+      }
+    }
+    ```
+
+  - Interface Segregation Principle: Make fine grained interfaces that are client specific. Clients should not be forced to depend upon interfaces that they do not use.
 
     - Bad:
     ```java
+    class TimerClient {
+      abstract void timeOut();
+    }
 
+    class Timer {
+      public void register(int timeout, TimerClient timerClient)
+    }
+
+    class Door {
+      abstract void lock();
+      abstract void unlock();
+      abstract void isDoorOpen();
+    }
+
+    class TimedDoor extends Door {...}
+    ```
+
+    ```java
+    interface Codec<T> {
+      T decode(Reader reader);
+      void encode(final T value, Writer writer);
+    }
+
+    class StringCodec implements Codec<String> {
+      @Override
+      public String decode(Reader reader) {...}
+
+      @Override
+      public String encode(final String value, Writer writer) {...}
+    }
     ```
 
     - Good:
     ```java
+    interface Decoder<T> {
+      T decode(Reader reader);
+    }
 
+    interface Encoder<T> {
+      void encode(final T value, Writer writer);
+    }
+
+    class StringCodec implements Decoder<String>, Encoder<String> {
+      @Override
+      public String decode(Reader reader) {...}
+
+      @Override
+      public String encode(final String value, Writer writer) {...}
+    }
+
+    class BooleanEncoder implements Encoder<Boolean> {
+      @Override
+      public void encode(final Boolean value, Writer writer) {...}
+    }
+
+    class DoubleFloatCodec implements Decoder<Double>, Encoder<Float> {
+      @Override
+      public Double decode(Reader reader) {...}
+
+      @Override
+      public void encode(final Float value, Writer writer) {...}
+    }
     ```
 
   - Dependency Inversion Principle: Depend on abstractions, not on concretions.
