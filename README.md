@@ -23,24 +23,60 @@ What should you look for:
 
   - Bad:
   ```java
-
+  void notDefensive(List<String> emptyList) {
+    System.out.println("Index 1: " + emptyList.get(1));
+  }
   ```
 
   - Good:
   ```java
-
+  void defensive(List<String> emptyList) {
+    if (emptyList != null && emptyList.size() > 1) {
+      System.out.println("Index 1: " + emptyList.get(1));
+    } else {
+      System.err.println("List has no elements.");
+    }
+  }
   ```
 
 - Functions / Methods / Services / Variable Names
 
   - Bad:
   ```java
+  public class Calendar {
 
+    public void print(boolean datBoi) {
+      int mSize = 12;
+
+      for (int z = 0; z < mSize; z++) {
+        Month m = Month.of(z);
+        if (datBoi) {
+          System.out.println(m.toString());
+        } else {
+          System.out.println(m.getValue());
+        }
+      }
+    }
+  }
   ```
 
   - Good:
   ```java
+  public class MonthService {
 
+    public void printAllMonths(boolean isDisplayName) {
+      int numberOfMonths = 12;
+
+      for (int monthNumber = 1; monthNumber <= numberOfMonths; monthNumber++) {
+        Month month = Month.of(monthNumber);
+        if (isDisplayName) {
+          System.out.println(month.toString());
+        } else {
+          System.out.println(month.getValue());
+        }
+      }
+    }
+  }
   ```
 
 - Return types (look for Dependency Inversion Principle)
@@ -59,24 +95,155 @@ What should you look for:
 
   - Bad:
   ```java
+  package org.checklist.codereview;
 
+  // Only classes from "org.checklist.codereview" package uses "Service" class
+  public class Service {
+
+    final Dao dao;
+
+    Service(Dao dao) {
+      this.dao = dao;
+    }
+
+    public void insert() {
+      Long id = getId();
+      dao.insert(id);
+    }
+
+    public void update() {
+      Long id = getId();
+      dao.update(id);
+    }
+
+    // Only methods from "Service" class uses "getId"
+    public Long getId() {
+      return 1L;
+    }
+  }
+
+  public class Resource {
+
+    private Service service;
+
+    Resource(Service service) {
+      this.service = service;
+    }
+
+    public void insert() {
+      service.insert();
+    }
+
+    public void update() {
+      service.update();
+    }
+  }
   ```
 
   - Good:
   ```java
+  package org.checklist.codereview;
 
+  // Only classes from "org.checklist.codereview" package uses "Service" class
+  class Service {
+
+    private final Dao dao;
+
+    Service(Dao dao) {
+      this.dao = dao;
+    }
+
+    public void insert() {
+      Long id = getId();
+      dao.insert(id);
+    }
+
+    public void update() {
+      Long id = getId();
+      dao.update(id);
+    }
+
+    // Only methods from "Service" class uses "getId"
+    private Long getId() {
+      return 1L;
+    }
+  }
+
+  public class Resource {
+
+    private Service service;
+
+    Resource(Service service) {
+      this.service = service;
+    }
+
+    public void insert() {
+      service.insert();
+    }
+
+    public void update() {
+      service.update();
+    }
+  }
   ```
 
 - Remove Unused/Commented Code
 
   - Bad:
   ```java
+  // This method does something
+  public void doSomething(int a, int b) {
+    // Uncomment in 3 months
+    // int c = a + b;
+    // int d = c * c * b - a;
 
+    System.out.println("Hello darkness my old friend...");
+
+    /*
+          ／￣＼
+          ／   ヽ |_
+          ￣＼     ＼
+          ／￣ /|/| /ﾚ､ ヽ＿
+          ￣＼ Yヘ |/ヘ幺 ∠
+          ＜_|(･> <･) 6) ／
+            (ﾞ _ ﾞ／＜
+            ＞､ーイ￣￣
+            ／厂ヽ／￣/＼
+            ( ｜ (📕)(> )
+            (ﾐ)ﾆ只ニ(ﾐ_／
+            /〈/L〉 ヽ
+            ｜ ヽ  |
+            〈＿／ ＼＿〉
+            ／ )  ( ＼
+               ________
+          _,.-Y  |  |  Y-._
+      .-~"   ||  |  |  |   "-.
+      I" ""=="|" !""! "|"[]""|     _____
+      L__  [] |..------|:   _[----I" .-{"-.
+     I___|  ..| l______|l_ [__L]_[I_/r(=}=-P
+    [L______L_[________]______j~  '-=c_]/=-^
+     \_I_j.--.\==I|I==_/.--L_]
+       [_((==)[`-----"](==)j
+          I--I"~~"""~~"I--I
+          |[]|         |[]|
+          l__j         l__j
+          |!!|         |!!|
+          |..|         |..|
+          ([])         ([])
+          ]--[         ]--[
+          [_L]         [_L]
+         /|..|\       /|..|\
+        `=}--{='     `=}--{='
+       .-^--r-^-.   .-^--r-^-.
+     */
+  }
   ```
 
   - Good:
   ```java
-
+  public void doSomething(int a, int b) {
+    System.out.println("Doing something...");
+  }
   ```
 
 - Format Code
@@ -150,7 +317,63 @@ What should you look for:
 ```
 
 ```
+
 - Adherence to the project's architectural pattern (Resource, Service, etc.)
+
+  - Resource:
+    - Each resource class is associated with a URI template (@Path).
+    - Each method represents an endpoint:
+      - The method should validate its input (request) using a validator.
+      - The method should call the service after validating the request.
+
+  - Service:
+    - Lógica de negócios da funcionalidade.
+    - Normalmente é onde os DAOs e Utils/Commons/Helpers são injetados e usados.
+    - Responsável por manipular models e transformar objetos de acordo com a necessidade.
+
+  - Model:
+    - Podem representar:
+      - Tabelas do banco de dados.
+      - Requests HTTP (DTOs).
+      - Responses HTTP (DTOs), normalmente correspondentes às necessidades de layout do front-end.
+      - Command:
+        - aaa
+
+  - DAO:
+    - Objeto que abstrai o acesso ao banco de dados.
+    - Cada método da classe corresponde a um SELECT/INSERT/DELETE/UPDATE.
+
+  - Mapper:
+    - Fazem o "de-para" do resultado das queries do DAO para objetos.
+
+  - Validator:
+    - Responsável pela validação das requests recebidas nos Resources:
+      - Campos estão nulos ou vazios.
+      - Tamanho de campos.
+      - IDs existem no banco de dados.
+
+  - Enums / Types:
+    - aaa
+
+  - Util / Commons / Helper:
+    - aaa
+
+  - Excel:
+
+    - ExcelImport:
+      - aaa
+
+    - ExcelExportTab:
+      - Interface "SkeletonExportTab".
+
+    - ExcelHeader:
+      - Interface "ExcelHeader".
+
+    - ImportTab:
+      - Interface "ImportTab".
+
+    - ExcelImportValidator:
+      - aaa
 
 - SOLID
 
