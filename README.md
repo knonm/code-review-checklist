@@ -83,12 +83,14 @@ What should you look for:
 
   - Bad:
   ```java
-
+  // Returns implementations
+  void HashMap<Long, LinkedList<String>> namesById() {...}
   ```
 
   - Good:
   ```java
-
+  // Returns abstractions
+  void Map<Long, List<String>> namesById() {...}
   ```
 
 - Functions / Methods / Services / Variable Access
@@ -654,16 +656,64 @@ What should you look for:
     }
     ```
 
-  - Dependency Inversion Principle: Depend on abstractions, not on concretions.
+  - Dependency Inversion Principle: High level modules should not depend upon low level modules, both should depend on abstraction. Abstractions should not depend upon details, details should depend upon abstractions.
 
     - Bad:
     ```java
+    // High level module
+    class ServiceImpl implements IService {
 
+      private ValidatorImpl validator;
+      private DAOImpl dao;
+
+      void insert(ArrayList<Object> model) {
+        validator.validate(model);
+        dao.insert(model);
+      }
+    }
+
+    // Low level module
+    class ValidatorImpl implements IValidator {
+
+      @Override
+      void validate(ArrayList<Object> model) {...}
+    }
+
+    // Low level module
+    class DAOImpl implements IDAO {
+
+      @Override
+      void insert(ArrayList<Object> model) {...}
+    }
     ```
 
     - Good:
     ```java
+    // High level module
+    class ServiceImpl implements IService {
 
+      private IValidator validator;
+      private IDAO dao;
+
+      void insert(Collection<Object> model) {
+        validator.validate(model);
+        dao.insert(model);
+      }
+    }
+
+    // Low level module
+    class ValidatorImpl implements IValidator {
+
+      @Override
+      void validate(Collection<Object> model) {...}
+    }
+
+    // Low level module
+    class DAOImpl implements IDAO {
+
+      @Override
+      void insert(Collection<Object> model) {...}
+    }
     ```
 
 General:
@@ -697,3 +747,4 @@ References:
 6. [Jeff Atwood blog post](https://blog.codinghorror.com/code-reviews-just-do-it)
 7. [dev.to: Cyclomatic Complexity](https://dev.to/designpuddle/coding-concepts---cyclomatic-complexity-3blk)
 8. [Uncle Bob: The Principles of OOD](http://butunclebob.com/ArticleS.UncleBob.PrinciplesOfOod)
+9. [What is the dependency inversion principle and why is it important?](https://stackoverflow.com/questions/62539/what-is-the-dependency-inversion-principle-and-why-is-it-important)
