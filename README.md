@@ -53,7 +53,7 @@ What should you look for:
   }
   ```
 
-  - Good: The "try-catch" block is too generic, it will catch exceptions besides the number parse one (NumberFormatException).
+  - Good: The "try-catch" block only catches NumberFormatException.
   ```java
   private static boolean isNumber(String str) {
     try {
@@ -276,7 +276,7 @@ What should you look for:
 
 - Format Code
 
-  - Bad:
+  - Bad: Unformatted code
   ```java
   public static
   String
@@ -290,7 +290,7 @@ What should you look for:
   }
   ```
 
-  - Good:
+  - Good: Formatted code (stick to IntelliJ/VSCode or use a styleguide like [Google's](https://google.github.io/styleguide/javaguide.html))
   ```java
   public static String iAmFormatted(int a, String b) {
     return b + a;
@@ -301,12 +301,87 @@ What should you look for:
 
   - Bad:
   ```java
+  class HelloWorld {
+    String hello(boolean isGoingHome) {
+      if (isGoingHome) {
+        return "Bye!";
+      }
 
+      return "Hello!";
+    }
+
+    // Ternary operators can result in false positives against some categories of code coveragem, like the statement coverage type
+    String world(int type) {
+      return type < 0 ? "Not a planet." : "Planet.";
+    }
+  }
+
+  // Covers half of the "HelloWorld" class
+  class HelloWorldTest {
+    private HelloWorld helloWorld;
+
+    // Covers 50% of the "hello" method
+    @Test
+    void shouldSayHello() {
+      assertEquals("Hello!", helloWorld.hello(false));
+    }
+
+    // False positive: covers 100% of the "world" method but isn't reaching "type < 0" condition
+    @Test
+    void shouldBeAPlanet() {
+      assertEquals("Planet.", helloWorld.world(1));
+    }
+  }
   ```
 
   - Good:
   ```java
+  class HelloWorld {
+    String hello(boolean isGoingHome) {
+      if (isGoingHome) {
+        return "Bye!";
+      }
 
+      return "Hello!";
+    }
+
+    String world(int type) {
+      if (type < 0) {
+        return "Not a planet.";
+      }
+
+      return "Planet.";
+    }
+  }
+
+  // Covers all of the "HelloWorld" class
+  class HelloWorldTest {
+    private HelloWorld helloWorld;
+
+    // Covers half of the "hello" method
+    @Test
+    void shouldSayHello() {
+      assertEquals("Hello!", helloWorld.hello(false));
+    }
+
+    // Covers the other half of "hello" method
+    @Test
+    void shouldSayBye() {
+      assertEquals("Bye!", helloWorld.hello(true));
+    }
+
+    // Covers half of the "world" method
+    @Test
+    void shouldBeAPlanet() {
+      assertEquals("Planet.", helloWorld.world(1));
+    }
+
+    // Covers the other half of "world" method
+    @Test
+    void shouldNotBeAPlanet() {
+      assertEquals("Not a planet.", helloWorld.world(-1));
+    }
+  }
   ```
 
 - Cyclomatic Complexity
@@ -434,29 +509,71 @@ What should you look for:
     public class ConcreteModem implements Connection, DataChannel {...}
     ```
 
-  - Open-Closed Principle: You should be able to extend a classes behavior, without modifying it.
+  - Open-Closed Principle: Software entities should be open for extension and closed for modification. You should be able to extend a classes behavior, without modifying it.
 
     - Bad:
     ```java
-    private Object entity;
-    private EventInterceptor ei;
+    public class EventInterceptor {
+      public void preLoad(Entity entity) {...}
+      public void postLoad(Entity entity) {...}
+      public void prePersist(Entity entity) {...}
+      public void preSave(Entity entity) {...}
+    }
 
-    public void handleEvent(Event event) {
-      if (event instanceof PreLoad) {
-        ei.preLoad(entity);
-      } else if (event instanceof PostLoad) {
-        ei.preLoad(entity);
-      } else if (event instanceof PrePersist) {
-        ei.preLoad(entity);
-      } else if (event instanceof PreSave) {
-        ei.preLoad(entity);
+    public class EventHandler {
+      private Entity entity;
+      private EventInterceptor ei;
+
+      // Should modify this method for every new Event implementation
+      public void handleEvent(Event event) {
+        if (event instanceof PreLoad) {
+          ei.preLoad(entity);
+        } else if (event instanceof PostLoad) {
+          ei.postLoad(entity);
+        } else if (event instanceof PrePersist) {
+          ei.prePersist(entity);
+        } else if (event instanceof PreSave) {
+          ei.preSave(entity);
+        }
       }
     }
     ```
 
     - Good:
     ```java
+    public abstract class Event {
+      abstract void interceptEvent(Entity entity);
+    }
 
+    public class PreLoad extends Event {
+      @Override
+      void interceptEvent(Entity entity) {...}
+    }
+
+    public class PostLoad extends Event {
+      @Override
+      void interceptEvent(Entity entity) {...}
+    }
+
+    public class PrePersist extends Event {
+      @Override
+      void interceptEvent(Entity entity) {...}
+    }
+
+    public class PreSave extends Event {
+      @Override
+      void interceptEvent(Entity entity) {...}
+    }
+
+    public class EventHandler {
+      private Entity entity;
+      private EventInterceptor ei;
+
+      // Method is now closed for changes
+      public void handleEvent(Event event) {
+        event.interceptEvent(entity);
+      }
+    }
     ```
 
   - Liskov Substitution Principle: Derived classes must be substitutable for their base classes.
@@ -502,8 +619,17 @@ What should you look for:
       }
     }
 
-    class RectangleTest {
+    class ShapeTest {
       void assertRectangle() {
+        Rectangle rectangle = new Rectangle(10);
+        rectangle.setWidth(4);
+        rectangle.setHeight(5);
+
+        // OK
+        assertEquals(20, rectangle.getArea());
+      }
+
+      void assertSquare() {
         Rectangle rectangle = new Square(10);
         rectangle.setWidth(4);
         rectangle.setHeight(5);
@@ -550,14 +676,23 @@ What should you look for:
       }
     }
 
-    class RectangleTest {
-      // You can't test squares as rectangles anymore
+    class ShapeTest {
       void assertRectangle() {
         Rectangle rectangle = new Rectangle(10);
         rectangle.setWidth(4);
         rectangle.setHeight(5);
 
+        // OK
         assertEquals(20, rectangle.getArea());
+      }
+
+      // You can't test squares as rectangles anymore
+      void assertSquare() {
+        Square square = new Rectangle(10);
+        square.setWidth(4);
+        square.setHeight(5);
+
+        assertEquals(20, square.getArea());
       }
     }
     ```
@@ -689,9 +824,12 @@ What should you look for:
     // High level module
     class ServiceImpl implements IService {
 
+      // Bad: using implementation over abstraction (ValidatorImpl)
       private ValidatorImpl validator;
+      // Bad: using implementation over abstraction (DAOImpl)
       private DAOImpl dao;
 
+      // Bad: using implementation over abstraction (ArrayList)
       void insert(ArrayList<Object> model) {
         validator.validate(model);
         dao.insert(model);
@@ -701,6 +839,7 @@ What should you look for:
     // Low level module
     class ValidatorImpl implements IValidator {
 
+      // Bad: using implementation over abstraction (ArrayList)
       @Override
       void validate(ArrayList<Object> model) {...}
     }
@@ -708,8 +847,9 @@ What should you look for:
     // Low level module
     class DAOImpl implements IDAO {
 
+      // Bad: using implementation over abstraction (LinkedList)
       @Override
-      void insert(ArrayList<Object> model) {...}
+      void insert(LinkedList<Object> model) {...}
     }
     ```
 
@@ -718,9 +858,12 @@ What should you look for:
     // High level module
     class ServiceImpl implements IService {
 
+      // Good: using abstraction over implementation (IValidator)
       private IValidator validator;
+      // Good: using abstraction over implementation (IDAO)
       private IDAO dao;
 
+      // Good: using abstraction over implementation (Collection / List)
       void insert(Collection<Object> model) {
         validator.validate(model);
         dao.insert(model);
@@ -730,6 +873,7 @@ What should you look for:
     // Low level module
     class ValidatorImpl implements IValidator {
 
+      // Good: using abstraction over implementation (Collection / List)
       @Override
       void validate(Collection<Object> model) {...}
     }
@@ -737,6 +881,7 @@ What should you look for:
     // Low level module
     class DAOImpl implements IDAO {
 
+      // Good: using abstraction over implementation (Collection / List)
       @Override
       void insert(Collection<Object> model) {...}
     }
