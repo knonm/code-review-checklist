@@ -7,34 +7,60 @@ What should you look for:
 
 - Magic Numbers and Hardcoded Values
 
-  - Bad:
+  - Bad: 26 doesn't mean anything.
   ```java
   for (i = 0; i < 26; i++) {}
   ```
 
-  - Good:
+  - Good: Variable gives the number 26 context.
   ```java
   int alphabetLength = 26;
 
   for (i = 0; i < alphabetLength; i++) {}
   ```
 
-- Defensive Code
+- Lack of defensive code:
 
-  - Bad:
+  - Bad: "emptyList" could be null or empty.
   ```java
   void notDefensive(List<String> emptyList) {
     System.out.println("Index 1: " + emptyList.get(1));
   }
   ```
 
-  - Good:
+  - Good: Avoids undesired exceptions.
   ```java
   void defensive(List<String> emptyList) {
     if (emptyList != null && emptyList.size() > 1) {
       System.out.println("Index 1: " + emptyList.get(1));
     } else {
       System.err.println("List has no elements.");
+    }
+  }
+  ```
+
+- Too defensive code:
+
+  - Bad: The "try-catch" block is too generic, it will catch exceptions besides the number parse one (NumberFormatException).
+  ```java
+  private static boolean isNumber(String str) {
+    try {
+        Double.valueOf(str);
+        return true;
+    } catch (Exception e) {
+        return false;
+    }
+  }
+  ```
+
+  - Good: The "try-catch" block is too generic, it will catch exceptions besides the number parse one (NumberFormatException).
+  ```java
+  private static boolean isNumber(String str) {
+    try {
+        Double.valueOf(str);
+        return true;
+    } catch (NumberFormatException e) {
+        return false;
     }
   }
   ```
