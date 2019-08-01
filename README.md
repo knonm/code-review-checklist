@@ -760,24 +760,6 @@ int sum(int a, int b) {
 
   - Bad:
   ```java
-  class TimerClient {
-    abstract void timeOut();
-  }
-
-  class Timer {
-    public void register(int timeout, TimerClient timerClient)
-  }
-
-  class Door {
-    abstract void lock();
-    abstract void unlock();
-    abstract void isDoorOpen();
-  }
-
-  class TimedDoor extends Door {...}
-  ```
-
-  ```java
   interface Codec<T> {
     T decode(Reader reader);
     void encode(final T value, Writer writer);
