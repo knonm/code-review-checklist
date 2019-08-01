@@ -414,7 +414,7 @@ class HelloWorldTest {
 ## Cyclomatic complexity
 
 - [IntelliJ plugin](https://plugins.jetbrains.com/plugin/93-metricsreloaded)
-- [VSCode plugins](https://marketplace.visualstudio.com/items?itemName=kisstkondoros.vscode-codemetrics)
+- [VSCode plugin](https://marketplace.visualstudio.com/items?itemName=kisstkondoros.vscode-codemetrics)
 
 - Bad:
 ```java
