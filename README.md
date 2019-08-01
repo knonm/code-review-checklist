@@ -884,15 +884,16 @@ int sum(int a, int b) {
 
 ### General
 - [An "Awesome" list of code review resources - articles, papers, tools, etc](https://github.com/joho/awesome-code-review)
+- [EditorConfig](https://editorconfig.org/): Helps maintain consistent coding styles for multiple developers working on the same project across various editors and IDEs.
 
 ### Tools
-- https://pmd.github.io/
-- https://getcodeflow.com/
-- https://eslint.org/
-- https://prettier.io/
-- https://www.sonarqube.org/
-- https://www.sonarlint.org/
-- https://www.reviewboard.org/
+- [PMD](https://pmd.github.io/): An extensible cross-language static code analyzer.
+- [Code Flow](https://getcodeflow.com/): Saas for measure code quality.
+- [ESLint](https://eslint.org/): Linting utility for JavaScript and JSX.
+- [Prettier](https://prettier.io/): An opinionated code formatter
+- [Sonar Qube](https://www.sonarqube.org/)
+- [Sonar Lint](https://www.sonarlint.org/)
+- [Review Board](https://www.reviewboard.org/)
 
 ### References
 1. [Publication about code review made by a Microsoft researcher](https://www.sback.it/publications/icse2013.pdf)
