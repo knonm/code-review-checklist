@@ -301,6 +301,10 @@ public void doSomething(int a, int b) {
 
 ## Format code
 
+- Use the same code format style across your IDEs.
+
+- Put it on your CI/CD pipeline.
+
 - Bad:
 ```java
 // Unformatted code
