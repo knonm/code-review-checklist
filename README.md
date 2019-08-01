@@ -1,5 +1,27 @@
 # Code review checklist / guidelines
 
+## Purpose
+
+The purpose is to provide guidance on doing code reviews by showing bad/good practices with examples.
+
+## Table of Contents
+
+1. [Magic numbers and hardcoded values](#magic-numbers-and-hardcoded-values)
+1. [Lack of defensive code](#lack-of-defensive-code)
+1. [Too defensive code ](#too-defensive-code)
+1. [Functions / Classes / Methods / Variables names](#functions-/-classes-/-methods-/-variables-names)
+1. [Return types](#return-types)
+1. [Functions / Classes / Methods / Variable access](#functions-/-classes-/-methods-/-variable-access)
+1. [Remove unused and commented code](#remove-unused-and-commented-code)
+1. [Format code](#format-code)
+1. [Code coverage](#code-coverage)
+1. [Cyclomatic complexity](#cyclomatic-complexity)
+1. [DRY (Don't Repeat Yourself)](#dry-(don't-repeat-yourself))
+1. [Data structures and Big-O complexities](#data-structures-and-big-o-complexities)
+1. [Adherence to the project's architectural pattern](#adherence-to-the-project's-architectural-pattern)
+1. [SOLID Principles](#solid-principles)
+1. [References and useful resources](#references-and-useful-resources)
+
 ## Magic numbers and hardcoded values
 
 - Bad:
@@ -66,7 +88,7 @@ private static boolean isNumber(String str) {
 }
 ```
 
-## Functions / Classes / Methods / Variable Names
+## Functions / Classes / Methods / Variables names
 
 - Bad:
 ```java
@@ -106,21 +128,23 @@ public class MonthService {
 }
 ```
 
-## Return types (see Dependency Inversion Principle)
+## Return types
+
+- Check [Dependency Inversion Principle](#dependency-inversion-principle).
 
 - Bad:
 ```java
-// Returns implementations
+// Returns implementation
 void HashMap<Long, LinkedList<String>> namesById() {...}
 ```
 
 - Good:
 ```java
-// Returns abstractions
+// Returns abstraction
 void Map<Long, List<String>> namesById() {...}
 ```
 
-## Functions / Classes / Methods / Variable Access
+## Functions / Classes / Methods / Variable access
 
 - Bad:
 ```java
@@ -294,7 +318,7 @@ String b
 
 - Good:
 ```java
-// Formatted code (stick to IntelliJ/VSCode or use a styleguide like Google's: https://google.github.io/styleguide/javaguide.html)
+// Formatted code (stick to IntelliJ / VSCode or use a styleguide like Google's: https://google.github.io/styleguide/javaguide.html)
 public static String iAmFormatted(int a, String b) {
   return b + a;
 }
@@ -313,7 +337,7 @@ class HelloWorld {
     return "Hello!";
   }
 
-  // Ternary operators can result in false positives against some categories of code coveragem, like the statement coverage type
+  // Ternary operators can result in false positives against some categories of code coverage, like the statement coverage type
   String world(int type) {
     return type < 0 ? "Not a planet." : "Planet.";
   }
@@ -389,14 +413,21 @@ class HelloWorldTest {
 
 ## Cyclomatic complexity
 
+- [IntelliJ plugin](https://plugins.jetbrains.com/plugin/93-metricsreloaded)
+- [VSCode plugins](https://marketplace.visualstudio.com/items?itemName=kisstkondoros.vscode-codemetrics)
+
 - Bad:
 ```java
+void tooComplex() {
 
+}
 ```
 
 - Good:
 ```java
+void simple() {
 
+}
 ```
 
 ## DRY (Don't Repeat Yourself)
@@ -408,7 +439,7 @@ int sum(int a, int b) {
 }
 
 Integer sumToo(int a, int b) {
-  Integer.sum(a, b);
+  return Integer.sum(a, b);
 }
 ```
 
@@ -420,11 +451,10 @@ int sum(int a, int b) {
 ```
 
 ## Data structures and Big-O complexities
-```
+- [Big O Cheatsheet](http://bigocheatsheet.com/)
+- [Big O Summary for Java collections framework implementations](https://stackoverflow.com/questions/559839/big-o-summary-for-java-collections-framework-implementations)
 
-```
-
-## Adherence to the project's architectural pattern (Resource, Service, etc.)
+## Adherence to the project's architectural pattern
 
 - Resource:
   - Each resource class is associated with a URI template (@Path).
@@ -437,13 +467,11 @@ int sum(int a, int b) {
   - Normalmente é onde os DAOs e Utils/Commons/Helpers são injetados e usados.
   - Responsável por manipular models e transformar objetos de acordo com a necessidade.
 
-- Model:
+- Model / Entity:
   - Podem representar:
     - Tabelas do banco de dados.
     - Requests HTTP (DTOs).
     - Responses HTTP (DTOs), normalmente correspondentes às necessidades de layout do front-end.
-    - Command:
-      - aaa
 
 - DAO:
   - Objeto que abstrai o acesso ao banco de dados.
@@ -458,32 +486,41 @@ int sum(int a, int b) {
     - Tamanho de campos.
     - IDs existem no banco de dados.
 
-- Enums / Types:
-  - aaa
+- Enums / Types
 
 - Util / Commons / Helper:
-  - aaa
+  - General function
 
-- Excel:
+- Excel (import and export):
 
   - ExcelImport:
-    - aaa
+    - Object that represents the imported/exported spreadsheet.
+    - Each class attribute corresponds to the column on the spreadsheet
+    - Implements interface "ExcelImport".
+    - Implements interface "DuplicateValidable" for validations purposes.
 
   - ExcelExportTab:
-    - Interface "SkeletonExportTab".
+    - Fill rows (ExcelRow object) with an ExcelImport implementation.
+    - The ExcelRow object is used to generate an new spreadsheet through ExcelGenerator class.
+    - Implements interface "SkeletonExportTab".
 
   - ExcelHeader:
-    - Interface "ExcelHeader".
+    - Header's translation keys.
+    - Instruction tab content.
+    - Implements interface "ExcelHeader".
 
   - ImportTab:
-    - Interface "ImportTab".
+    - Process row (ImportRow object) and returns an ExcelImport implementation.
+    - Implements interface "ImportTab".
 
   - ExcelImportValidator:
-    - aaa
+    - Similar to validators, but checks spreadsheets instead of a serialized JSON.
 
 ## SOLID Principles
 
-- Single Responsibility Principle: A class should have one, and only one, reason to change.
+### Single Responsibility Principle
+
+  - A class should have one, and only one, reason to change.
 
   - Bad:
   ```java
@@ -512,7 +549,11 @@ int sum(int a, int b) {
   public class ConcreteModem implements Connection, DataChannel {...}
   ```
 
-- Open-Closed Principle: Software entities should be open for extension and closed for modification. You should be able to extend a classes behavior, without modifying it.
+### Open-Closed Principle
+
+  - Software entities should be open for extension and closed for modification.
+
+  - You should be able to extend a classes behavior, without modifying it.
 
   - Bad:
   ```java
@@ -579,7 +620,9 @@ int sum(int a, int b) {
   }
   ```
 
-- Liskov Substitution Principle: Derived classes must be substitutable for their base classes.
+### Liskov Substitution Principle
+
+  - Derived classes must be substitutable for their base classes.
 
   - Bad:
   ```java
@@ -623,7 +666,8 @@ int sum(int a, int b) {
   }
 
   class ShapeTest {
-    void assertRectangle() {
+    @Test
+    void shouldEvaluateRectangleArea() {
       Rectangle rectangle = new Rectangle(10);
       rectangle.setWidth(4);
       rectangle.setHeight(5);
@@ -632,7 +676,8 @@ int sum(int a, int b) {
       assertEquals(20, rectangle.getArea());
     }
 
-    void assertSquare() {
+    @Test
+    void shouldEvaluateSquareArea() {
       Rectangle rectangle = new Square(10);
       rectangle.setWidth(4);
       rectangle.setHeight(5);
@@ -667,20 +712,21 @@ int sum(int a, int b) {
   }
 
   class Square {
-    private Rectangle rectange;
+    private Rectangle rectangle;
 
-    Square(Rectangle rectange) {
-      this.rectange = rectange;
+    Square(Rectangle rectangle) {
+      this.rectangle = rectangle;
     }
 
     void setWidthAndHeight(int widthAndHeight) {
-      rectange.setWidth(widthAndHeight);
-      rectange.setHeight(widthAndHeight);
+      rectangle.setWidth(widthAndHeight);
+      rectangle.setHeight(widthAndHeight);
     }
   }
 
   class ShapeTest {
-    void assertRectangle() {
+    @Test
+    void shouldEvaluateRectangleArea() {
       Rectangle rectangle = new Rectangle(10);
       rectangle.setWidth(4);
       rectangle.setHeight(5);
@@ -690,7 +736,8 @@ int sum(int a, int b) {
     }
 
     // You can't test squares as rectangles anymore
-    void assertSquare() {
+    @Test
+    void shouldEvaluateSquareArea() {
       Square square = new Rectangle(10);
       square.setWidth(4);
       square.setHeight(5);
@@ -702,57 +749,14 @@ int sum(int a, int b) {
 
   - Good (by inheritance):
   ```java
-  interface Shape {
 
-  }
-
-  class Rectangle  {
-    private int width, height;
-
-    Rectangle(int width, int height) {
-      this.width = width;
-      this.height = height;
-    }
-
-    void setWidth(int width) {
-      this.width = width;
-    }
-
-    void setHeight(int height) {
-      this.height = height;
-    }
-
-    int getArea() {
-      return this.width * this.height;
-    }
-  }
-
-  class Square {
-    private Rectangle rectange;
-
-    Square(Rectangle rectange) {
-      this.rectange = rectange;
-    }
-
-    void setWidthAndHeight(int widthAndHeight) {
-      super.setWidth(widthAndHeight);
-      super.setHeight(widthAndHeight);
-    }
-  }
-
-  class RectangleTest {
-    // You can't test squares as rectangles anymore
-    void assertRectangle() {
-      Rectangle rectangle = new Rectangle(10);
-      rectangle.setWidth(4);
-      rectangle.setHeight(5);
-
-      assertEquals(20, rectangle.getArea());
-    }
-  }
   ```
 
-- Interface Segregation Principle: Make fine grained interfaces that are client specific. Clients should not be forced to depend upon interfaces that they do not use.
+### Interface Segregation Principle
+
+  - Make fine grained interfaces that are client specific.
+
+  - Clients should not be forced to depend upon interfaces that they do not use.
 
   - Bad:
   ```java
@@ -820,7 +824,11 @@ int sum(int a, int b) {
   }
   ```
 
-- Dependency Inversion Principle: High level modules should not depend upon low level modules, both should depend on abstraction. Abstractions should not depend upon details, details should depend upon abstractions.
+### Dependency Inversion Principle
+
+  - High level modules should not depend upon low level modules, both should depend on abstraction.
+
+  - Abstractions should not depend upon details, details should depend upon abstractions.
 
   - Bad:
   ```java
@@ -866,7 +874,7 @@ int sum(int a, int b) {
     // Good: using abstraction over implementation (IDAO)
     private IDAO dao;
 
-    // Good: using abstraction over implementation (Collection / List)
+    // Good: using abstraction over implementation (Iterable / Collection / List)
     void insert(Collection<Object> model) {
       validator.validate(model);
       dao.insert(model);
@@ -876,7 +884,7 @@ int sum(int a, int b) {
   // Low level module
   class ValidatorImpl implements IValidator {
 
-    // Good: using abstraction over implementation (Collection / List)
+    // Good: using abstraction over implementation (Iterable / Collection / List)
     @Override
     void validate(Collection<Object> model) {...}
   }
@@ -884,22 +892,18 @@ int sum(int a, int b) {
   // Low level module
   class DAOImpl implements IDAO {
 
-    // Good: using abstraction over implementation (Collection / List)
+    // Good: using abstraction over implementation (Iterable / Collection / List)
     @Override
     void insert(Collection<Object> model) {...}
   }
   ```
 
-# References and useful resources
+## References and useful resources
 
-General:
-- [Big O Cheatsheet](http://bigocheatsheet.com/)
+### General
 - [An "Awesome" list of code review resources - articles, papers, tools, etc](https://github.com/joho/awesome-code-review)
 
-Java:
-- [Big O Summary for Java collections framework implementations](https://stlackoverflow.com/questions/559839/big-o-summary-for-java-collections-framework-implementations)
-
-Tools:
+### Tools
 - https://pmd.github.io/
 - https://getcodeflow.com/
 - https://eslint.org/
@@ -908,13 +912,7 @@ Tools:
 - https://www.sonarlint.org/
 - https://www.reviewboard.org/
 
-Intellij plugins:
-- [Cyclomatic Complexity](https://plugins.jetbrains.com/plugin/93-metricsreloaded)
-
-VSCode plugins:
-- [Cyclomatic Complexity](https://marketplace.visualstudio.com/items?itemName=kisstkondoros.vscode-codemetrics)
-
-References:
+### References
 1. [Publication about code review made by a Microsoft researcher](https://www.sback.it/publications/icse2013.pdf)
 2. ["What to Look for in a Code Review", short book written by a JetBrains employee](https://leanpub.com/s/MMUrwWmotCIr412BkGxt9w.pdf)
 3. [dev.to: Code review checklist example](https://dev.to/bosepchuk/a-code-review-checklist-prevents-stupid-mistakes-o6)
