@@ -9,16 +9,16 @@ The purpose is to provide guidance on doing code reviews by showing bad/good pra
 1. [Magic numbers and hardcoded values](#magic-numbers-and-hardcoded-values)
 1. [Lack of defensive code](#lack-of-defensive-code)
 1. [Too defensive code ](#too-defensive-code)
-1. [Functions / Classes / Methods / Variables names](#functions-/-classes-/-methods-/-variables-names)
+1. [Functions / Classes / Methods / Variables names](#functions-&#47;-classes-&#47;-methods-&#47;-variables-names)
 1. [Return types](#return-types)
-1. [Functions / Classes / Methods / Variable access](#functions-/-classes-/-methods-/-variable-access)
+1. [Functions / Classes / Methods / Variable access](#functions-&#47;-classes-&#47;-methods-&#47;-variable-access)
 1. [Remove unused and commented code](#remove-unused-and-commented-code)
 1. [Format code](#format-code)
 1. [Code coverage](#code-coverage)
 1. [Cyclomatic complexity](#cyclomatic-complexity)
-1. [DRY (Don't Repeat Yourself)](#dry-(don't-repeat-yourself))
+1. [DRY (Don't Repeat Yourself)](#dry-&#40;don't-repeat-yourself&#41;)
 1. [Data structures and Big-O complexities](#data-structures-and-big-o-complexities)
-1. [Adherence to the project's architectural pattern](#adherence-to-the-project's-architectural-pattern)
+1. [Adherence to the project's architectural pattern](#adherence-to-the-project&#39;s-architectural-pattern)
 1. [SOLID Principles](#solid-principles)
 1. [References and useful resources](#references-and-useful-resources)
 
@@ -727,6 +727,10 @@ int sum(int a, int b) {
     void setWidthAndHeight(int widthAndHeight) {
       rectangle.setWidth(widthAndHeight);
       rectangle.setHeight(widthAndHeight);
+    }
+
+    int getArea() {
+      return rectangle.getArea();
     }
   }
 
