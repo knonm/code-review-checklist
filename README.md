@@ -16,7 +16,7 @@ The purpose is to provide guidance on doing code reviews by showing bad/good pra
 1. [Format code](#format-code)
 1. [Code coverage](#code-coverage)
 1. [Cyclomatic complexity](#cyclomatic-complexity)
-1. [DRY (Don't Repeat Yourself)](#dry-don't-repeat-yourself)
+1. [DRY (Don't Repeat Yourself)](#dry-dont-repeat-yourself)
 1. [Data structures and Big-O complexities](#data-structures-and-big-o-complexities)
 1. [Adherence to the project's architectural pattern](#adherence-to-the-projects-architectural-pattern)
 1. [SOLID Principles](#solid-principles)
