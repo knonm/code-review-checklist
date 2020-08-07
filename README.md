@@ -757,11 +757,6 @@ int sum(int a, int b) {
   }
   ```
 
-  - Good (by inheritance):
-  ```java
-
-  ```
-
 ### Interface Segregation Principle
 
   - Make fine grained interfaces that are client specific.
@@ -821,6 +816,10 @@ int sum(int a, int b) {
   - High level modules should not depend upon low level modules, both should depend on abstraction.
 
   - Abstractions should not depend upon details, details should depend upon abstractions.
+
+  - High level modules: policy setter.
+
+  - Low level modules: dependency modules, often used by high level modules.
 
   - Bad:
   ```java
