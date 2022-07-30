@@ -905,7 +905,7 @@ int sum(int a, int b) {
 - [Review Board](https://www.reviewboard.org/)
 
 ### References
-1. [Publication about code review made by a Microsoft researcher](https://www.sback.it/publications/icse2013.pdf)
+1. ["Expectations, Outcomes, and Challenges of Modern Code Review", paper by Alberto Bacchelli and Christian Bird](https://sback.it/publications/icse2013.pdf)
 2. ["What to Look for in a Code Review", short book written by Trisha Gee](https://leanpub.com/whattolookforinacodereview)
 3. [dev.to: Code review checklist example](https://dev.to/bosepchuk/a-code-review-checklist-prevents-stupid-mistakes-o6)
 4. [dev.to: Code review checklist example](https://dev.to/designpuddle/code-review-checklist-14ke)
